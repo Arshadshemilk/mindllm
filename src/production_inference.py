@@ -439,7 +439,8 @@ def setup_production_pipeline(
     else:
         logger.warning("No confidence classifier checkpoint provided")
         confidence_classifier = ConfidenceClassifierEnsembleProduction(
-            exit_layer_indices=config.exit_layers
+            exit_layer_indices=config.exit_layers,
+            input_dim=1152
         )
         confidence_classifier.to(device)
     

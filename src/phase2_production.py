@@ -152,7 +152,7 @@ class GeometricBCELossProduction(nn.Module):
         
         for layer_idx in sorted(predictions.keys()):
             pred = predictions[layer_idx].clamp(1e-6, 1.0 - 1e-6)
-            target = targets[layer_idx].float()
+            target = targets[layer_idx].float().squeeze()
             
             # Compute BCE for this layer
             layer_bce = self.bce(pred, target)
