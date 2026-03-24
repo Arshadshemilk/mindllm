@@ -105,7 +105,11 @@ def main():
         'checkpoint_dir': 'checkpoints'
     }
     
-    pipeline = RealTrainingPipeline(config)
+    pipeline = RealTrainingPipeline(
+        data_path="./data",
+        checkpoint_dir="./checkpoints",
+        config=config
+    )
     
     try:
         confidence_model, bandit_controller = pipeline.run_complete_training(
