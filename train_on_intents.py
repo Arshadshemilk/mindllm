@@ -146,17 +146,34 @@ def main():
         logger.info("\nSample inference:")
         for prompt in test_prompts:
             try:
+                # Preprocess
+                inputs = test_pipeline.preprocess_input(prompt)
+                
+                # Generate
                 result = test_pipeline.generate_with_adaptive_exit(
-                    prompt=prompt,
+                    input_ids=inputs['input_ids'],
+                    attention_mask=inputs['attention_mask'],
                     max_new_tokens=50
                 )
                 
+                # Decode output
+                generated_text = test_pipeline.tokenizer.decode(
+                    result['generated_tokens'][0], 
+                    skip_special_tokens=True
+                )
+                
+                exit_info = result['exit_info']
+                avg_exit = sum(exit_info['exit_layers']) / len(exit_info['exit_layers'])
+                avg_conf = sum(exit_info['confidences']) / len(exit_info['confidences'])
+                
                 logger.info(f"\n  Input: {prompt}")
-                logger.info(f"  Output: {result['generated_text']}")
-                logger.info(f"  Exit Layer: {result['exit_layer']}")
-                logger.info(f"  Confidence: {result['confidence']:.3f}")
+                logger.info(f"  Output: {generated_text[:100]}...")
+                logger.info(f"  Avg Exit Layer: {avg_exit:.1f}")
+                logger.info(f"  Avg Confidence: {avg_conf:.3f}")
             except Exception as e:
                 logger.warning(f"  Inference failed for '{prompt}': {e}")
+                import traceback
+                traceback.print_exc()
         
         logger.info("\n" + "="*60)
         logger.info("✓ ALL DONE!")

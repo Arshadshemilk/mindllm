@@ -36,13 +36,22 @@ class RealTrainingPipeline:
         self.checkpoint_dir.mkdir(exist_ok=True)
         
         # Default config
-        self.config = config or {
+        defaults = {
             'batch_size': 32,
             'num_epochs_phase2': 20,
             'num_samples_phase3': 1000,
             'learning_rate': 1e-3,
             'device': 'cuda' if torch.cuda.is_available() else 'cpu'
         }
+        
+        if config:
+            # Flexible: allow 'num_epochs' as alias for 'num_epochs_phase2'
+            if 'num_epochs' in config and 'num_epochs_phase2' not in config:
+                config['num_epochs_phase2'] = config['num_epochs']
+            
+            defaults.update(config)
+        
+        self.config = defaults
         
         self.training_history = {
             'phase1_data': [],
