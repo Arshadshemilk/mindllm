@@ -399,7 +399,7 @@ def train_confidence_classifiers(
     # Initialize model
     model = ConfidenceClassifierEnsembleProduction(
         exit_layer_indices=exit_layer_indices,
-        input_dim=2304,
+        input_dim=1152,
         hidden_dim1=256,
         hidden_dim2=64,
         dropout_rate=0.2

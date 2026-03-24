@@ -176,7 +176,7 @@ class RealTrainingPipeline:
         
         model = ConfidenceClassifierEnsembleProduction(
             exit_layer_indices=exit_layers,
-            input_dim=2304,
+            input_dim=1152,
             hidden_dim1=256,
             hidden_dim2=64,
             dropout_rate=0.2

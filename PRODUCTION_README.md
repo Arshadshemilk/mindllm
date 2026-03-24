@@ -95,7 +95,7 @@ train_data = model.extract_training_data(
 # Initialize ensemble
 ensemble = ConfidenceClassifierEnsembleProduction(
     exit_layer_indices=[6, 10, 14, 18, 22, 26],
-    input_dim=2304,
+    input_dim=1152,
     hidden_dim1=256,
     hidden_dim2=64
 )

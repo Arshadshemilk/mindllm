@@ -257,13 +257,13 @@ All system parameters are centralized in [src/config.py](src/config.py):
 ModelConfig(
     model_name="unsloth/gemma-3-1b-it",
     num_layers=26,
-    hidden_dim=2304,
+    hidden_dim=1152,
     exit_layer_indices=[6, 10, 14, 18, 22, 26]
 )
 
 # Confidence classifier configuration
 ConfidenceClassifierConfig(
-    input_dim=2304,           # Match Gemma 3 1B hidden dimension
+    input_dim=1152,           # Match Gemma 3 1B hidden dimension
     hidden_dim1=256,
     hidden_dim2=64,
     gamma=0.9,              # Discount factor
