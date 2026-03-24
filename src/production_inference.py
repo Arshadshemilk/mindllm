@@ -5,6 +5,7 @@ Integrates Phase 1 (multi-exit), Phase 2 (confidence classifiers),
 and Phase 3 (bandit controller) for real-world deployment.
 """
 
+import os
 import torch
 import torch.nn as nn
 from typing import Dict, List, Tuple, Optional

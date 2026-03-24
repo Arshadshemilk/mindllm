@@ -333,7 +333,7 @@ class RealTrainingPipeline:
                 # Get confidence at each exit layer
                 for layer_idx in [6, 10, 14, 18, 22, 26]:
                     if layer_idx < len(all_hidden):
-                        hidden = all_hidden[layer_idx].mean(dim=1)
+                        hidden = all_hidden[layer_idx].mean(dim=1).float()
                         
                         with torch.no_grad():
                             conf = confidence_classifier.heads[str(layer_idx)](
