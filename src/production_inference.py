@@ -407,16 +407,27 @@ def setup_production_pipeline(
     from transformers import AutoTokenizer, AutoModelForCausalLM
     
     logger.info(f"Loading model: {model_path}")
-    model = AutoModelForCausalLM.from_pretrained(
-        model_path,
-        device_map='auto',
-        torch_dtype=config.dtype,
-        attn_implementation="flash_attention_2" if device == "cuda" else None
-    )
+    try:
+        # Try with flash attention for better performance on GPU
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            device_map='auto',
+            torch_dtype=config.dtype,
+            attn_implementation="flash_attention_2" if device == "cuda" else "eager"
+        )
+    except (ImportError, RuntimeError):
+        # Fallback to eager attention if flash_attn not installed (common in Colab)
+        logger.warning("Flash Attention 2 not available, using eager attention")
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            device_map='auto',
+            torch_dtype=config.dtype,
+            attn_implementation="eager"
+        )
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     
     # Load confidence classifier
-    from phase2_production import ConfidenceClassifierEnsembleProduction
+    from .phase2_production import ConfidenceClassifierEnsembleProduction
     
     if confidence_model_path and os.path.exists(confidence_model_path):
         logger.info(f"Loading confidence classifier: {confidence_model_path}")
@@ -432,7 +443,7 @@ def setup_production_pipeline(
         )
     
     # Setup bandit controller
-    from phase3_production import AdaptiveThresholdManagerProduction
+    from .phase3_production import AdaptiveThresholdManagerProduction
     
     bandit_controller = AdaptiveThresholdManagerProduction(
         num_arms=config.num_arms,

@@ -166,7 +166,7 @@ class RealTrainingPipeline:
         logger.info("PHASE 2: TRAIN CONFIDENCE CLASSIFIERS")
         logger.info("="*60)
         
-        from phase2_production import (
+        from .phase2_production import (
             ConfidenceClassifierEnsembleProduction,
             ConfidenceTrainerProduction
         )
@@ -287,7 +287,7 @@ class RealTrainingPipeline:
         logger.info("PHASE 3: BANDIT ONLINE LEARNING")
         logger.info("="*60)
         
-        from phase3_production import UCBBanditControllerProduction
+        from .phase3_production import UCBBanditControllerProduction
         
         # Initialize bandit
         controller = UCBBanditControllerProduction(
