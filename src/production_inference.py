@@ -141,6 +141,8 @@ class ProductionInferencePipeline:
         
         self.model.eval()
         generated_tokens = input_ids.clone()
+        current_attention_mask = attention_mask.clone()
+        
         exit_info = {
             'exit_layers': [],
             'thresholds_used': [],
@@ -149,25 +151,15 @@ class ProductionInferencePipeline:
             'token_count': 0
         }
         
-        # KV cache for efficiency
-        past_key_values = None
-        
         for token_idx in range(max_new_tokens):
             with torch.no_grad():
-                # Forward pass through model
-                if past_key_values is not None:
-                    # Use only last token for subsequent passes
-                    current_input_ids = generated_tokens[:, -1:]
-                else:
-                    current_input_ids = generated_tokens
-                
                 # Get model outputs with all hidden states
                 outputs = self.model(
-                    input_ids=current_input_ids,
-                    attention_mask=attention_mask if past_key_values is None else None,
+                    input_ids=generated_tokens,
+                    attention_mask=current_attention_mask,
                     output_hidden_states=True,
                     return_dict=True,
-                    use_cache=False  # We're managing manually for control
+                    use_cache=False
                 )
                 
                 # Extract hidden states at exit layers
@@ -200,14 +192,8 @@ class ProductionInferencePipeline:
                             early_exited = True
                             break
                 
-                # Get logits from selected exit layer
-                if best_exit_layer in hidden_states_at_exits:
-                    hidden_state = hidden_states_at_exits[best_exit_layer][:, -1, :]
-                    
-                    # Use exit head to get logits (or use model's head)
-                    logits = outputs.logits[0, -1, :]  # Simplified: use model's final logits
-                else:
-                    logits = outputs.logits[0, -1, :]
+                # Get logits from model
+                logits = outputs.logits[0, -1, :]
                 
                 # Sample next token
                 next_token = self._sample_token(
@@ -220,6 +206,12 @@ class ProductionInferencePipeline:
                 generated_tokens = torch.cat([
                     generated_tokens,
                     next_token.unsqueeze(0)
+                ], dim=1)
+                
+                # Expand attention mask to match new sequence length
+                current_attention_mask = torch.cat([
+                    current_attention_mask,
+                    torch.ones((1, 1), device=current_attention_mask.device, dtype=current_attention_mask.dtype)
                 ], dim=1)
                 
                 exit_info['exit_layers'].append(best_exit_layer)
