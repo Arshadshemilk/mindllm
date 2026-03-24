@@ -68,7 +68,8 @@ class ProductionInferencePipeline:
             'total_samples': 0,
             'total_tokens': 0,
             'early_exits': 0,
-            'exit_layer_distribution': [0] * 26,
+            'exit_layers': [],
+            'exit_layer_distribution': [0] * 40,  # Increased to support larger models
             'threshold_selections': [],
             'confidences': [],
             'latencies': []
@@ -237,6 +238,7 @@ class ProductionInferencePipeline:
         for layer in exit_info['exit_layers']:
             self.inference_metrics['exit_layer_distribution'][layer - 1] += 1
         
+        self.inference_metrics['exit_layers'].extend(exit_info['exit_layers'])
         self.inference_metrics['confidences'].extend(exit_info['confidences'])
         self.inference_metrics['threshold_selections'].extend(exit_info['thresholds_used'])
         
