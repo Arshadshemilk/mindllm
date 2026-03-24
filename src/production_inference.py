@@ -120,10 +120,12 @@ class ProductionInferencePipeline:
                     training=False
                 )
                 
-                # Squeeze last dim, then average over sequence
-                conf = conf.squeeze(-1)  # [batch, 1] -> [batch]
-                if conf.dim() > 0:
-                    conf = conf.mean(dim=0)  # reduce to scalar
+                # Always reduce to scalar: squeeze all dims except batch, then mean over batch/sequence
+                conf = conf.squeeze()  # Remove all size-1 dimensions
+                
+                # If still not scalar, take mean
+                while conf.dim() > 0:
+                    conf = conf.mean()
                 
                 confidences[layer_idx] = float(conf.item())
         
