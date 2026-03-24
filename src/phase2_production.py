@@ -297,8 +297,8 @@ class ConfidenceTrainerProduction:
         # Compute ECE
         metrics = {'loss': loss.item()}
         for layer_idx in predictions.keys():
-            pred = predictions[layer_idx].cpu().numpy()
-            target = all_targets[layer_idx].cpu().numpy().astype(int).flatten()
+            pred = predictions[layer_idx].detach().cpu().float().numpy()
+            target = all_targets[layer_idx].detach().cpu().float().numpy().astype(int).flatten()
             
             ece = self.compute_ece(pred.flatten(), target)
             metrics[f'ece_layer_{layer_idx}'] = ece
@@ -359,8 +359,8 @@ class ConfidenceTrainerProduction:
             with torch.no_grad():
                 pred = self.model.heads[str(layer_idx)](hidden_state, training=False)
             
-            pred = pred.cpu().numpy().flatten()
-            target = target.cpu().numpy().astype(int).flatten()
+            pred = pred.detach().cpu().float().numpy().flatten()
+            target = target.detach().cpu().float().numpy().astype(int).flatten()
             
             # Find optimal temperature
             best_temp = 1.0
@@ -370,7 +370,7 @@ class ConfidenceTrainerProduction:
             
             for temp in temps_to_try:
                 calibrated_pred = 1.0 / (1.0 + np.exp(
-                    -np.log(pred / (1.0 - pred + 1e-10)) / temp
+                    -np.log(np.clip(pred, 1e-10, 1.0 - 1e-10) / (1.0 - np.clip(pred, 1e-10, 1.0 - 1e-10))) / temp
                 ))
                 calibrated_pred = np.clip(calibrated_pred, 1e-6, 1.0 - 1e-6)
                 
