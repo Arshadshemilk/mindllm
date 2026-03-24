@@ -113,7 +113,7 @@ def main():
     
     try:
         confidence_model, bandit_controller = pipeline.run_complete_training(
-            base_model=model,
+            model=model,
             tokenizer=tokenizer,
             train_texts=train_texts_split,
             val_texts=val_texts_split,

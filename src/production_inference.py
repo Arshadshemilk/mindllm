@@ -219,7 +219,7 @@ class ProductionInferencePipeline:
                 # Update metrics
                 generated_tokens = torch.cat([
                     generated_tokens,
-                    next_token.unsqueeze(0).unsqueeze(0)
+                    next_token.unsqueeze(0)
                 ], dim=1)
                 
                 exit_info['exit_layers'].append(best_exit_layer)
