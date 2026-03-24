@@ -434,7 +434,8 @@ def setup_production_pipeline(
     if confidence_model_path and os.path.exists(confidence_model_path):
         logger.info(f"Loading confidence classifier: {confidence_model_path}")
         confidence_classifier = ConfidenceClassifierEnsembleProduction(
-            exit_layer_indices=config.exit_layers
+            exit_layer_indices=config.exit_layers,
+            input_dim=1152
         )
         confidence_classifier.load_state_dict(torch.load(confidence_model_path))
         confidence_classifier.to(device)
