@@ -353,7 +353,7 @@ class ConfidenceTrainerProduction:
             # Get predictions
             hidden_state = torch.cat(
                 hidden_states_dict[layer_idx], dim=0
-            ).to(self.device)
+            ).to(self.device).float()
             target = torch.cat(targets_dict[layer_idx], dim=0).to(self.device)
             
             with torch.no_grad():
