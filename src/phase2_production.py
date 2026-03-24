@@ -223,7 +223,7 @@ class ConfidenceTrainerProduction:
             
             for layer_idx in hidden_states_dict.keys():
                 states = [hidden_states_dict[layer_idx][i] for i in range(batch_start, batch_end)]
-                batch_hidden_states[layer_idx] = torch.cat(states, dim=0).to(self.device)
+                batch_hidden_states[layer_idx] = torch.cat(states, dim=0).to(self.device).float()
                 
                 targets = [targets_dict[layer_idx][i] for i in range(batch_start, batch_end)]
                 batch_targets[layer_idx] = torch.cat(targets, dim=0).to(self.device)
@@ -278,7 +278,7 @@ class ConfidenceTrainerProduction:
         
         for layer_idx in hidden_states_dict.keys():
             states = hidden_states_dict[layer_idx]
-            all_hidden_states[layer_idx] = torch.cat(states, dim=0).to(self.device)
+            all_hidden_states[layer_idx] = torch.cat(states, dim=0).to(self.device).float()
             
             targets = targets_dict[layer_idx]
             all_targets[layer_idx] = torch.cat(targets, dim=0).to(self.device)

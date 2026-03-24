@@ -111,7 +111,7 @@ class ProductionInferencePipeline:
         
         for layer_idx in self.config.exit_layers:
             if layer_idx in hidden_states:
-                hidden = hidden_states[layer_idx].to(self.device)
+                hidden = hidden_states[layer_idx].to(self.device).float()
                 
                 # Get confidence from classifier
                 conf = self.confidence_classifier.heads[str(layer_idx)](
@@ -441,6 +441,7 @@ def setup_production_pipeline(
         confidence_classifier = ConfidenceClassifierEnsembleProduction(
             exit_layer_indices=config.exit_layers
         )
+        confidence_classifier.to(device)
     
     # Setup bandit controller
     from .phase3_production import AdaptiveThresholdManagerProduction
