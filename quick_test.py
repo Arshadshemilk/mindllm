@@ -28,7 +28,7 @@ def main():
     
     model = AutoModelForCausalLM.from_pretrained(
         "unsloth/gemma-3-1b-it",
-        device_map='auto',
+        device_map={"": 0},
         torch_dtype=torch.float16
     )
     tokenizer = AutoTokenizer.from_pretrained("unsloth/gemma-3-1b-it")
