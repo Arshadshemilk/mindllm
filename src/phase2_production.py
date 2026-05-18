@@ -155,6 +155,10 @@ class GeometricBCELossProduction(nn.Module):
             target = targets[layer_idx].float().squeeze()
             
             # Compute BCE for this layer
+            # Ensure target has same shape as pred
+            if target.dim() == 0:  # scalar tensor
+                target = target.unsqueeze(0)  # → shape [1]
+                
             layer_bce = self.bce(pred, target)
             
             # Discount factor
